@@ -471,7 +471,7 @@ impl HomeAssistant {
 
         #[derive(Serialize)]
         struct DeviceConfig {
-            identifiers: Vector<String>,
+            identifiers: Vec<String>,
             name: String,
 
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -488,7 +488,7 @@ impl HomeAssistant {
             state_topic: String,
             unit_of_measurement: Option<String>,
             icon: Option<String>,
-            device: &DeviceConfig,
+            device: DeviceConfig,
             unique_id: Option<String>,
         }
 
@@ -497,8 +497,8 @@ impl HomeAssistant {
             device_class: device_class.map(str::to_string),
             state_class: state_class.map(str::to_string),
             state_topic: format!("system-mqtt/{}/{}", self.hostname, topic_name),
-            device: &DeviceConfig{
-                identifiers: {self.hostname.to_string()},
+            device: DeviceConfig{
+                identifiers: vec![self.hostname.to_string()],
                 name: self.hostname.to_string(),
                 sw_version: Some(env!("CARGO_PKG_VERSION").to_string()),
             },
