@@ -470,6 +470,15 @@ impl HomeAssistant {
         log::info!("Registering topic `{}`.", topic_name);
 
         #[derive(Serialize)]
+        struct DeviceConfig {
+            identifiers: Vector<String>,
+            name: String,
+
+            #[serde(skip_serializing_if = "Option::is_none")]
+            sw_version: Option<String>,
+        }
+
+        #[derive(Serialize)]
         struct TopicConfig {
             name: String,
 
@@ -479,7 +488,7 @@ impl HomeAssistant {
             state_topic: String,
             unit_of_measurement: Option<String>,
             icon: Option<String>,
-            device: String,
+            device: &DeviceConfig,
             unique_id: Option<String>,
         }
 
@@ -488,7 +497,11 @@ impl HomeAssistant {
             device_class: device_class.map(str::to_string),
             state_class: state_class.map(str::to_string),
             state_topic: format!("system-mqtt/{}/{}", self.hostname, topic_name),
-            device: self.hostname.to_string(),
+            device: &DeviceConfig{
+                identifiers: {self.hostname.to_string()},
+                name: self.hostname.to_string(),
+                sw_version: Some(env!("CARGO_PKG_VERSION").to_string()),
+            },
             unique_id: Some(format!("{}{}", self.hostname, topic_name)),
             unit_of_measurement: unit_of_measurement.map(str::to_string),
             icon: icon.map(str::to_string),
