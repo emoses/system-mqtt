@@ -104,6 +104,8 @@ impl Default for Config {
     }
 }
 
+
+
 #[tokio::main]
 async fn main() {
     let arguments: Arguments = argh::from_env();
@@ -477,6 +479,8 @@ impl HomeAssistant {
             state_topic: String,
             unit_of_measurement: Option<String>,
             icon: Option<String>,
+            device: String,
+            unique_id: Option<String>,
         }
 
         let message = serde_json::ser::to_string(&TopicConfig {
@@ -484,6 +488,8 @@ impl HomeAssistant {
             device_class: device_class.map(str::to_string),
             state_class: state_class.map(str::to_string),
             state_topic: format!("system-mqtt/{}/{}", self.hostname, topic_name),
+            device: self.hostname.to_string(),
+            unique_id: Some(format!("{}{}", self.hostname, topic_name)),
             unit_of_measurement: unit_of_measurement.map(str::to_string),
             icon: icon.map(str::to_string),
         })
